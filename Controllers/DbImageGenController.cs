@@ -14,10 +14,9 @@ public class DbImageGenController : ControllerBase
         _logger = logger;
     }
 
-    [HttpGet(Name = "dbimage")]
-    public IActionResult Get()
+    [HttpPost("dbimage")]
+    public IActionResult GenerateImage(DbImageGenRequest request)
     {
-	    var obj = new SvgOutput();
-	    return Ok(obj);
+	    return Ok(request.dbname);
     }
 }
