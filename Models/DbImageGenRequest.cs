@@ -2,6 +2,6 @@ namespace DbImageGen.Models;
 
 public class DbImageGenRequest 
 {
-	public string dbname {get; set;} = string.Empty;
+	public List<Table> Table {get; set;} = new List<Table>();
 }
 
