@@ -17,6 +17,11 @@ public class DbImageGenController : ControllerBase
     [HttpPost("dbimage")]
     public IActionResult GenerateImage(DbImageGenRequest request)
     {
-	    return Ok(request.dbname);
+	    var temp = new List<string>();
+	    foreach (var t in request.Table)
+	    {
+		    temp.Add(t.tableName);
+	    }
+	    return Ok(temp);
     }
 }
