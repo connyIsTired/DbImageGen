@@ -3,5 +3,8 @@
 public interface IBuilder
 {
 	void BuildParentSvg();
-	void BuildRectangle();
+	void BuildCloseSvgTag();
+	void BuildText(string input);
+	void BuildRect();
+	string Build(string input);
 }
