@@ -2,5 +2,5 @@
 
 public class DbImageGenDto
 {
-	List<TableDto> Tables { get; set;} = new List<TableDto>();
+	public List<TableDto> Tables { get; set;} = new List<TableDto>();
 }

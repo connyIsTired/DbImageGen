@@ -1,10 +1,13 @@
-﻿namespace DbImageGen;
+﻿using DbImageGen.Models;
+namespace DbImageGen;
 
-public class Builder : IBuilder
+public class Builder
 {
 	private string returnObj = string.Empty;
-	public Builder()
+	private DbImageGenDto _incoming;
+	public Builder(DbImageGenDto incoming)
 	{
+		_incoming = incoming;
 	}
 
 	public void BuildParentSvg()
@@ -17,10 +20,16 @@ public class Builder : IBuilder
 		returnObj = returnObj + "</svg>";
 	}
 
-	public void BuildText(string input)
+	public string BuildText(FieldDto input)
 	{
-	    var svgText = $"<text font-size=\"10pt\" x=\"55\" y=\"20\" class=\"small\">{input}</text>";
-	    returnObj = returnObj + svgText;
+	    var svgText = $"<text font-size=\"10pt\" x=\"55\" y=\"{input.offset}\" class=\"small\">{input.FieldName}</text>";
+	    return svgText;
+	}
+
+	public void BuildAllText()
+	{
+		returnObj = returnObj + _incoming.Tables.First().Fields.Aggregate(string.Empty, (result, next) => result = result + BuildText(next));
+
 	}
 
 	public void BuildRect()
@@ -28,11 +37,11 @@ public class Builder : IBuilder
 		returnObj = returnObj + "<rect x=\"50\" y=\"10\" width=\"250\" height=\"250\" fill=\"none\" stroke=\"blue\"/>";
 	}
 	
-	public string Build(string input)
+	public string Build()
 	{
 		BuildParentSvg();
 		BuildRect();
-		BuildText(input);
+		BuildAllText();
 		BuildCloseSvgTag();
 		return returnObj;
 	}
