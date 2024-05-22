@@ -1,27 +1,43 @@
 ﻿using DbImageGen.Models;
 namespace DbImageGen;
 
-public static class DtoBuilder
+public class DtoBuilder
 {
+	private DbImageGenRequest Incoming { get; init; }
+	private int Offset { get; set; }
+	private int TableLength { get; set; }
 
-	public static DbImageGenDto CreateDto(DbImageGenRequest incoming)
+	public DtoBuilder(DbImageGenRequest incoming)
 	{
-		var offset = 25;
+		Offset = 45;
+		Incoming = incoming;
+	}
+
+	public DbImageGenDto CreateDto()
+	{
 		var tableList = new List<TableDto>();
 		var tableDto = new TableDto();
 		var fields = new List<FieldDto>();
-		foreach (var f in incoming.Table.First().fields)
+		foreach (var f in Incoming.Table.First().fields)
 		{
 			var fieldsDto = new FieldDto();
-			fieldsDto.offset = offset;
+			fieldsDto.Offset = Offset;
 			fieldsDto.FieldName = f;
-			offset += 20;
+			Offset += 20;
 			fields.Add(fieldsDto);
 		}
 		tableDto.Fields = fields;
-		tableDto.TableName = incoming.Table.First().tableName;
+		tableDto.TableName = Incoming.Table.First().tableName;
+		tableDto.TableSize = SetTableLength();
 		tableList.Add(tableDto);
 		return new DbImageGenDto{ Tables = tableList};
 	}
+
+	public int SetTableLength()
+	{
+		var fieldCount = Incoming.Table.First().fields.Count();
+		return 20 + fieldCount * 20;
+	}
+	
 
 }
