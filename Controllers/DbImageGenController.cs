@@ -17,8 +17,6 @@ public class DbImageGenController : ControllerBase
     [HttpPost("dbimage")]
     public IActionResult GenerateImage(DbImageGenRequest request)
     {
-	    
-
 	    var dto = new DtoBuilder(request).CreateDto();
 	    var result = new Builder(dto).Build();
 	    return Ok(result);
