@@ -16,7 +16,7 @@ public class Builder
 
 	public void BuildOpenSvgTag()
 	{
-		ReturnObj += "<svg x=\"50\">";
+		ReturnObj += $"<svg x=\"{Incoming.Tables.First().TablePositions.TableStartX}\">";
 	}
 
 	public void BuildCloseSvgTag()
@@ -26,7 +26,7 @@ public class Builder
 
 	public string BuildText(FieldDto input)
 	{
-	    var svgText = $"<text font-size=\"10pt\" x=\"55\" y=\"{input.Offset}\" class=\"small\">{input.FieldName}</text>";
+	    var svgText = $"<text font-size=\"10pt\" x=\"{Incoming.Tables.First().TablePositions.TableInsetX}\" y=\"{input.Offset}\" class=\"small\">{input.FieldName}</text>";
 	    return svgText;
 	}
 
@@ -52,7 +52,7 @@ public class Builder
 
 	public void BuildRect()
 	{
-		ReturnObj += $"<rect x=\"50\" y=\"10\" width=\"250\" height=\"{Incoming.Tables.First().TableSize}\" fill=\"none\" stroke=\"blue\"/>";
+		ReturnObj += $"<rect x=\"{Incoming.Tables.First().TablePositions.TableStartX}\" y=\"{Incoming.Tables.First().TablePositions.TableStartY}\" width=\"250\" height=\"{Incoming.Tables.First().TableSize}\" fill=\"none\" stroke=\"blue\"/>";
 	}
 	
 	public string Build()
@@ -64,5 +64,4 @@ public class Builder
 		BuildCloseSvgTag();
 		return ReturnObj;
 	}
-
 }
