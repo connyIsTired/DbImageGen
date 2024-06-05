@@ -14,9 +14,9 @@ public class Builder
 		ReturnObj += "<svg width=\"1000\" height=\"1000\" xmlns=\"http://www.w3.org/2000/svg\">";
 	}
 
-	public void BuildOpenSvgTag()
+	public void BuildOpenSvgTag(TableDto table)
 	{
-		ReturnObj += $"<svg x=\"{Incoming.Tables.First().TablePositions.TableStartX}\">";
+		ReturnObj += $"<svg x=\"{table.TablePositions.TableStartX}\">";
 	}
 
 	public void BuildCloseSvgTag()
@@ -24,9 +24,9 @@ public class Builder
 		 ReturnObj += "</svg>";
 	}
 
-	public string BuildText(FieldDto input)
+	public string BuildText(TableDto table, FieldDto input)
 	{
-	    var svgText = $"<text font-size=\"10pt\" x=\"{Incoming.Tables.First().TablePositions.TableInsetX}\" y=\"{input.Offset}\" class=\"small\">{input.FieldName}</text>";
+	    var svgText = $"<text font-size=\"10pt\" x=\"{table.TablePositions.TableInsetX}\" y=\"{input.Offset}\" class=\"small\">{input.FieldName}</text>";
 	    return svgText;
 	}
 
@@ -35,32 +35,45 @@ public class Builder
 		ReturnObj += "<line x1=\"0\" x2=\"250\" y1=\"30\" y2=\"30\" stroke=\"black\"/>";
 	}
 
-	public void BuildTitle()
+	public void BuildTitle(TableDto table)
 	{
 
-		BuildOpenSvgTag();
-		ReturnObj += $"<text font-size=\"10pt\" x=\"125\" y=\"25\" class=\"small\" text-anchor=\"middle\">{Incoming.Tables.First().TableName}</text>";
+		BuildOpenSvgTag(table);
+		ReturnObj += $"<text font-size=\"10pt\" x=\"125\" y=\"25\" class=\"small\" text-anchor=\"middle\">{table.TableName}</text>";
 		BuildLine();
 		BuildCloseSvgTag();
 	}
 
-	public void BuildAllText()
+	public void BuildAllText(TableDto table)
 	{
-		ReturnObj += Incoming.Tables.First().Fields.Aggregate(string.Empty, (result, next) => result = result + BuildText(next));
+		ReturnObj += table.Fields.Aggregate(string.Empty, (result, next) => result = result + BuildText(table, next));
 
 	}
 
-	public void BuildRect()
+	public void BuildRect(TableDto table)
 	{
-		ReturnObj += $"<rect x=\"{Incoming.Tables.First().TablePositions.TableStartX}\" y=\"{Incoming.Tables.First().TablePositions.TableStartY}\" width=\"250\" height=\"{Incoming.Tables.First().TableSize}\" fill=\"none\" stroke=\"blue\"/>";
+		ReturnObj += $"<rect x=\"{table.TablePositions.TableStartX}\" y=\"{table.TablePositions.TableStartY}\" width=\"250\" height=\"{table.TableSize}\" fill=\"none\" stroke=\"blue\"/>";
+	}
+
+	public void BuildTable(TableDto table)
+	{
+		BuildRect(table);
+		BuildTitle(table);
+		BuildAllText(table);
+	}
+
+	public void BuildTables()
+	{
+		foreach (var table in Incoming.Tables)
+		{
+			BuildTable(table);
+		}
 	}
 	
 	public string Build()
 	{
 		BuildParentSvg();
-		BuildRect();
-		BuildTitle();
-		BuildAllText();
+		BuildTables();
 		BuildCloseSvgTag();
 		return ReturnObj;
 	}
