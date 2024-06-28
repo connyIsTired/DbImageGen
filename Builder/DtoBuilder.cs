@@ -50,13 +50,23 @@ public class DtoBuilder
 
 	public void CalcTablePositions()
 	{
-		var startingX = 50;
-		foreach (var table in tableList)
-		{
-			table.TablePositions.TableStartX = startingX;
-			table.TablePositions.TableInsetX = startingX + TablePadding;
-			startingX += (250 + TableMarginX);
-		}	
+		assignTableXPositions();
+	}
 
+	public List<int> CalcTableXPositions()
+	{
+		var result = new List<int>{50, 350, 650}; 
+		return result;
+	}
+
+	public void assignTableXPositions()
+	{
+		var positions = CalcTableXPositions();
+		for (var i = 0; i < tableList.Count; i ++)
+		{
+			var positionIndex = i % positions.Count;
+			tableList[i].TablePositions.TableStartX = positions[positionIndex];
+			tableList[i].TablePositions.TableInsetX = positions[positionIndex] + TablePadding;
+		}
 	}
 }
