@@ -55,7 +55,16 @@ public class DtoBuilder
 
 	public List<int> CalcTableXPositions()
 	{
-		var result = new List<int>{50, 350, 650}; 
+		var result = new List<int>(); 
+		var tablesPerRow = CalTablesPerRow();
+		int position = TableMarginX;
+		while (tablesPerRow !=0)
+		{
+			result.Add(position);
+			position += 250 + TableMarginX;
+			tablesPerRow--;
+		}
+
 		return result;
 	}
 
@@ -68,5 +77,10 @@ public class DtoBuilder
 			tableList[i].TablePositions.TableStartX = positions[positionIndex];
 			tableList[i].TablePositions.TableInsetX = positions[positionIndex] + TablePadding;
 		}
+	}
+
+	public int CalTablesPerRow()
+	{
+		return (1000-TableMarginX) / 250 + TableMarginX;
 	}
 }
