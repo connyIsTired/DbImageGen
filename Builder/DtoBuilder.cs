@@ -24,7 +24,7 @@ public class DtoBuilder
 		{
 			var tableDto = new TableDto(); 
 			var fields = new List<FieldDto>(); 
-			var offset = 45;
+			var offset = 40;
 			foreach (var f in table.fields) 
 			{
 				var fieldsDto = new FieldDto();
@@ -51,6 +51,7 @@ public class DtoBuilder
 	public void CalcTablePositions()
 	{
 		assignTableXPositions();
+		assignTableYPositions();
 	}
 
 	public List<int> CalcTableXPositions()
@@ -68,6 +69,15 @@ public class DtoBuilder
 		return result;
 	}
 
+	public void assignTableYPositions()
+	{
+		for (var i = 0; i < tableList.Count; i ++)
+		{
+			var indexAmountToStepBack = i < CalTablesPerRow() ? 0 : i - CalTablesPerRow();
+			tableList[i].TablePositions.TableStartY = i < CalTablesPerRow() ? TableMarginY : tableList[i - CalTablesPerRow()].TableSize + 50;
+		}
+	}
+
 	public void assignTableXPositions()
 	{
 		var positions = CalcTableXPositions();
@@ -81,6 +91,6 @@ public class DtoBuilder
 
 	public int CalTablesPerRow()
 	{
-		return (1000-TableMarginX) / 250 + TableMarginX;
+		return (1000-TableMarginX) / (250 + TableMarginX);
 	}
 }

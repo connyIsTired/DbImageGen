@@ -26,21 +26,21 @@ public class Builder
 
 	public string BuildText(TableDto table, FieldDto input)
 	{
-	    var svgText = $"<text font-size=\"10pt\" x=\"{table.TablePositions.TableInsetX}\" y=\"{input.Offset}\" class=\"small\">{input.FieldName}</text>";
+	    var svgText = $"<text font-size=\"10pt\" x=\"{table.TablePositions.TableInsetX}\" y=\"{input.Offset + table.TablePositions.TableStartY}\" class=\"small\">{input.FieldName}</text>";
 	    return svgText;
 	}
 
-	public void BuildLine()
+	public void BuildLine(TableDto table)
 	{
-		ReturnObj += "<line x1=\"0\" x2=\"250\" y1=\"30\" y2=\"30\" stroke=\"black\"/>";
+		ReturnObj += $"<line x1=\"0\" x2=\"250\" y1=\"{table.TablePositions.TableStartY + 20}\" y2=\"{table.TablePositions.TableStartY + 20}\" stroke=\"black\"/>";
 	}
 
 	public void BuildTitle(TableDto table)
 	{
 
 		BuildOpenSvgTag(table);
-		ReturnObj += $"<text font-size=\"10pt\" x=\"125\" y=\"25\" class=\"small\" text-anchor=\"middle\">{table.TableName}</text>";
-		BuildLine();
+		ReturnObj += $"<text font-size=\"10pt\" x=\"125\" y=\"{table.TablePositions.TableStartY + 15}\" class=\"small\" text-anchor=\"middle\">{table.TableName}</text>";
+		BuildLine(table);
 		BuildCloseSvgTag();
 	}
 
