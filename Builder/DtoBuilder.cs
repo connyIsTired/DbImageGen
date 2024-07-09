@@ -74,7 +74,7 @@ public class DtoBuilder
 		for (var i = 0; i < tableList.Count; i ++)
 		{
 			var indexAmountToStepBack = i < CalTablesPerRow() ? 0 : i - CalTablesPerRow();
-			tableList[i].TablePositions.TableStartY = i < CalTablesPerRow() ? TableMarginY : tableList[i - CalTablesPerRow()].TableSize + 50;
+			tableList[i].TablePositions.TableStartY = i < CalTablesPerRow() ? TableMarginY : tableList[indexAmountToStepBack].TableSize + tableList[indexAmountToStepBack].TablePositions.TableStartY + 50;
 		}
 	}
 
