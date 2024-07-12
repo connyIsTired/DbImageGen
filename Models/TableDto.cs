@@ -6,4 +6,6 @@ public class TableDto
 	public List<FieldDto> Fields { get; set; } = new List<FieldDto>();
 	public int TableSize { get; set; } = 0;
 	public TablePositions TablePositions { get; set; } = new TablePositions();
+	public List<int> ForeignKeys { get; set; } = new List<int>();
+	public int Id {get; set;}
 }
