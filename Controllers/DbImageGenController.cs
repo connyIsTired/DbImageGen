@@ -18,6 +18,8 @@ public class DbImageGenController : ControllerBase
     public IActionResult GenerateImage(DbImageGenRequest request)
     {
 	    var dto = new DtoBuilder(request).CreateDto();
+			var lineBuilder = new ForeignKeyLineBuilder(dto);
+			dto.ForeignKeys = lineBuilder.BuildLines();
 	    var result = new Builder(dto).Build();
 	    return Ok(result);
     }
