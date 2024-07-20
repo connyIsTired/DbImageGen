@@ -8,15 +8,19 @@ public class DtoBuilder
 	private int TableMarginX { get; set; }
 	private int TableMarginY { get; set; }
 	private int TablePadding { get; set; }
+	private int TableWidth { get; set; }
 	private List<TableDto> tableList { get; set; }
+	private List<ForeignKeyLine> foreignKeys { get; set; }
 
 	public DtoBuilder(DbImageGenRequest incoming)
 	{
 		TableMarginX = 50;
 		TableMarginY = 10;
 		TablePadding = 5; 
+		TableWidth = 250;
 		Incoming = incoming; 
 		tableList = new List<TableDto>();
+		foreignKeys = new List<ForeignKeyLine>();
 	} 
 	public DbImageGenDto CreateDto() 
 	{ 
@@ -36,10 +40,18 @@ public class DtoBuilder
 			tableDto.Fields = fields;
 			tableDto.TableName = table.tableName;
 			tableDto.TableSize = CalcTableLength(table);
+			tableDto.TableWidth = TableWidth;
+			tableDto.Id = table.id;
+			tableDto.ForeignKeys = table.foreignKeys;
 			tableList.Add(tableDto);
 		}
 		CalcTablePositions();
-		return new DbImageGenDto{ Tables = tableList};
+		return new DbImageGenDto
+		{ 
+			Tables = tableList,
+			ForeignKeys = foreignKeys
+
+		};
 	}
 
 	public int CalcTableLength(Table table)
@@ -62,7 +74,7 @@ public class DtoBuilder
 		while (tablesPerRow !=0)
 		{
 			result.Add(position);
-			position += 250 + TableMarginX;
+			position += TableWidth + TableMarginX;
 			tablesPerRow--;
 		}
 
@@ -91,6 +103,6 @@ public class DtoBuilder
 
 	public int CalTablesPerRow()
 	{
-		return (1000-TableMarginX) / (250 + TableMarginX);
+		return (1000-TableMarginX) / (TableWidth + TableMarginX);
 	}
 }
