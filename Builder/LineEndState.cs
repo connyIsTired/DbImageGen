@@ -11,6 +11,6 @@ public class LineEndState : ILineBuilderState
 	}
 	public LinePoint MakePoint(LinePoint currentPoint)
 	{
-
+		return new LinePoint{XPosition=currentPoint.XPosition + 50, YPosition=currentPoint.YPosition};
 	}
 }

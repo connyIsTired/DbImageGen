@@ -69,11 +69,30 @@ public class Builder
 			BuildTable(table);
 		}
 	}
+
+	public void BuildLines()
+	{
+		// <polyline points="0,100 50,25 50,75 100,0" />
+		var pline = "<polyline fill=\"none\" stroke=\"black\" points=\"";
+		foreach(var line in Incoming.ForeignKeys)
+		{
+			if (line.LinePoints.Count > 0)
+			{
+				foreach(var lp in line.LinePoints) {
+
+					pline += $"{lp.XPosition}, {lp.YPosition} ";
+				}
+			}
+		}
+		pline += "\"/>";
+		ReturnObj += pline;
+	}
 	
 	public string Build()
 	{
 		BuildParentSvg();
 		BuildTables();
+		BuildLines();
 		BuildCloseSvgTag();
 		return ReturnObj;
 	}

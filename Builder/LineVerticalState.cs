@@ -11,6 +11,6 @@ public class LineVerticalState : ILineBuilderState
 	}
 	public LinePoint MakePoint(LinePoint currentPoint)
 	{
-
+		return new LinePoint();
 	}
 }

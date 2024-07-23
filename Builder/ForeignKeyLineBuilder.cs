@@ -4,12 +4,12 @@ public class ForeignKeyLineBuilder
 {
 	DbImageGenDto Dto;
 
-	ILineBuilderState StartState;
-	ILineBuilderState EndState;
-	ILineBuilderState HorizontalState;
-	ILineBuilderState VerticalState;
+	public ILineBuilderState StartState {get; init;}
+	public ILineBuilderState EndState {get; init;}
+	public ILineBuilderState HorizontalState {get; init;}
+	public ILineBuilderState VerticalState {get; init;}
 
-	ILineBuilderState State;
+	public ILineBuilderState State {get; set;}
 
 	public ForeignKeyLineBuilder(DbImageGenDto dto)
 	{
@@ -21,17 +21,17 @@ public class ForeignKeyLineBuilder
 		State = StartState;
 	}
 
-	public List<LinePoint> BuildLine(LinePoint point)
+	public List<LinePoint> BuildLine(LinePoint point, List<LinePoint> linePointList)
 	{
-		var LinePointList = new List<LinePoint>();
 
 		if (State == EndState)
 		{
-			return LinePointList;
+			linePointList.Add(State.MakePoint(point));
+			return linePointList;
 		}
-		LinePointList.Add(State.MakePoint(point));
+		linePointList.Add(State.MakePoint(point));
 
-		return BuildLine(point);
+		return BuildLine(point, linePointList);
 	}
 
 	public List<ForeignKeyLine> BuildLines()
@@ -39,10 +39,15 @@ public class ForeignKeyLineBuilder
 		var Lines = new List<ForeignKeyLine>();
 		foreach (var table in Dto.Tables)
 		{
+			if (table.ForeignKeys.Count == 0)
+			{
+				continue;
+			}
 			foreach(var fk in table.ForeignKeys)
 			{
+				var linePointList = new List<LinePoint>();
 				var startingPoint = GetStartingPoint(table);
-				var line = BuildLine(startingPoint);
+				var line = BuildLine(startingPoint, linePointList);
 				var fkl = new ForeignKeyLine();
 				fkl.LinePoints = line;
 				Lines.Add(fkl);
@@ -54,7 +59,7 @@ public class ForeignKeyLineBuilder
 	private LinePoint GetStartingPoint(TableDto table)
 	{
 		var xpos = table.TablePositions.TableStartX + table.TableWidth;
-		var ypos = table.TablePositions.TableStartY + table.TableSize;
+		var ypos = table.TablePositions.TableStartY + table.TableSize / 2;
 		return new LinePoint
 		{
 			XPosition = xpos,

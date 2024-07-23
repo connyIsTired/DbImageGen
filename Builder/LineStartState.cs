@@ -10,6 +10,7 @@ public class LineStartState : ILineBuilderState
 	}
 	public LinePoint MakePoint(LinePoint currentPoint)
 	{
-
+		Fklb.State = Fklb.EndState;
+		return currentPoint;
 	}
 }
