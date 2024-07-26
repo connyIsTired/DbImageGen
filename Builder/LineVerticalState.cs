@@ -11,6 +11,7 @@ public class LineVerticalState : ILineBuilderState
 	}
 	public LinePoint MakePoint(LinePoint currentPoint)
 	{
-		return new LinePoint();
+		Fklb.State = Fklb.EndState;
+		return Fklb.EndPoint;
 	}
 }

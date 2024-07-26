@@ -15,7 +15,7 @@ public class DtoBuilder
 	public DtoBuilder(DbImageGenRequest incoming)
 	{
 		TableMarginX = 50;
-		TableMarginY = 10;
+		TableMarginY = 50;
 		TablePadding = 5; 
 		TableWidth = 250;
 		Incoming = incoming; 

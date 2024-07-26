@@ -2,7 +2,7 @@
 
 public class ForeignKeyLineBuilder
 {
-	DbImageGenDto Dto;
+	public DbImageGenDto Dto {get; init;}
 
 	public ILineBuilderState StartState {get; init;}
 	public ILineBuilderState EndState {get; init;}
@@ -10,6 +10,9 @@ public class ForeignKeyLineBuilder
 	public ILineBuilderState VerticalState {get; init;}
 
 	public ILineBuilderState State {get; set;}
+	public LinePoint EndPoint {get; set;}
+	public List<(int X, int Y)> PointList {get; set;}
+	private int Margin = 50;
 
 	public ForeignKeyLineBuilder(DbImageGenDto dto)
 	{
@@ -19,6 +22,8 @@ public class ForeignKeyLineBuilder
 		HorizontalState = new LineHorizontalState(this);
 		VerticalState = new LineVerticalState(this);
 		State = StartState;
+		EndPoint = new LinePoint();
+		PointList = new ForeignKeyPointBuilder(Margin/2, Dto.Tables).BuildPointList();
 	}
 
 	public List<LinePoint> BuildLine(LinePoint point, List<LinePoint> linePointList)
@@ -26,7 +31,6 @@ public class ForeignKeyLineBuilder
 
 		if (State == EndState)
 		{
-			linePointList.Add(State.MakePoint(point));
 			return linePointList;
 		}
 		linePointList.Add(State.MakePoint(point));
@@ -36,6 +40,7 @@ public class ForeignKeyLineBuilder
 
 	public List<ForeignKeyLine> BuildLines()
 	{
+		foreach(var thing in PointList){Console.WriteLine(thing);}
 		var Lines = new List<ForeignKeyLine>();
 		foreach (var table in Dto.Tables)
 		{
@@ -47,6 +52,7 @@ public class ForeignKeyLineBuilder
 			{
 				var linePointList = new List<LinePoint>();
 				var startingPoint = GetStartingPoint(table);
+				FindEndPoint(fk);
 				var line = BuildLine(startingPoint, linePointList);
 				var fkl = new ForeignKeyLine();
 				fkl.LinePoints = line;
@@ -65,6 +71,14 @@ public class ForeignKeyLineBuilder
 			XPosition = xpos,
 			YPosition = ypos
 		};
+	}
+
+	private void FindEndPoint(int fk)
+	{
+		var endTable = Dto.Tables.Find(t => t.Id == fk);
+
+		EndPoint.XPosition = endTable.TablePositions.TableStartX;
+		EndPoint.YPosition = endTable.TablePositions.TableStartY + (endTable.TableSize / 2);
 	}
 }
 
