@@ -11,7 +11,9 @@ public class ForeignKeyLineBuilder
 
 	public ILineBuilderState State {get; set;}
 	public LinePoint EndPoint {get; set;}
-	public List<(int X, int Y)> PointList {get; set;}
+	public LinePoint StartingPoint {get; set;}
+	public int Direction {get; set;}
+	public Dictionary<(int X, int Y), SortedSet<(int X, int y)>> PointList {get; set;}
 	private int Margin = 50;
 
 	public ForeignKeyLineBuilder(DbImageGenDto dto)
@@ -23,6 +25,8 @@ public class ForeignKeyLineBuilder
 		VerticalState = new LineVerticalState(this);
 		State = StartState;
 		EndPoint = new LinePoint();
+		StartingPoint = new LinePoint();
+		Direction = 0;
 		PointList = new ForeignKeyPointBuilder(Margin/2, Dto.Tables).BuildPointList();
 	}
 
@@ -51,9 +55,10 @@ public class ForeignKeyLineBuilder
 			foreach(var fk in table.ForeignKeys)
 			{
 				var linePointList = new List<LinePoint>();
-				var startingPoint = GetStartingPoint(table);
+				StartingPoint = GetStartingPoint(table);
 				FindEndPoint(fk);
-				var line = BuildLine(startingPoint, linePointList);
+				SetDirection();
+				var line = BuildLine(StartingPoint, linePointList);
 				var fkl = new ForeignKeyLine();
 				fkl.LinePoints = line;
 				Lines.Add(fkl);
@@ -79,6 +84,18 @@ public class ForeignKeyLineBuilder
 
 		EndPoint.XPosition = endTable.TablePositions.TableStartX;
 		EndPoint.YPosition = endTable.TablePositions.TableStartY + (endTable.TableSize / 2);
+	}
+
+	private void SetDirection()
+	{
+		// move right = 1
+		// move left = 2
+		// move up = 4
+		// move down = 8
+
+		var horizontalValue = StartingPoint.XPosition < EndPoint.XPosition ? 1 : 2;
+		var verticalValue = StartingPoint.YPosition <= EndPoint.YPosition ? 8 : 4;
+		Direction = horizontalValue + verticalValue;
 	}
 }
 

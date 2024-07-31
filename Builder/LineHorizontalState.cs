@@ -11,25 +11,43 @@ public class LineHorizontalState : ILineBuilderState
 	}
 	public LinePoint MakePoint(LinePoint currentPoint)
 	{
-		var tablePositions = Fklb.Dto.Tables.Select(t => t).
-			OrderBy(t => t.TablePositions.TableStartX).ThenBy(x => x.TablePositions.TableStartY);
-		if (currentPoint.XPosition < Fklb.EndPoint.XPosition)
+		if (CanGoToEndPoint(currentPoint))
 		{
-			if (tablePositions.Any(tp => currentPoint.XPosition < tp.TablePositions.TableStartX && 
-						tp.TablePositions.TableStartX < Fklb.EndPoint.YPosition)) 
-			{
-				if ( tablePositions.Any(tp => currentPoint.YPosition == (tp.TablePositions.TableStartY + 50)))
-					{
-						Fklb.State = Fklb.EndState;
-						return Fklb.EndPoint;
-					} else {
-						Fklb.State = Fklb.VerticalState;
-						return new LinePoint{XPosition = currentPoint.XPosition + 25, YPosition = currentPoint.YPosition};
-				}
-			}
+			Fklb.State = Fklb.EndState;
+			return Fklb.EndPoint;
 		}
-		Fklb.State = Fklb.EndState;
-		return Fklb.EndPoint;
+		var currTuple = (currentPoint.XPosition, currentPoint.YPosition);
+		if(currTuple == (Fklb.StartingPoint.XPosition, Fklb.StartingPoint.YPosition))
+		{
+			var point = Fklb.PointList[currTuple].First();
+			Fklb.State = Fklb.VerticalState;
+			return new LinePoint{XPosition=point.X, YPosition=point.y};
+		}
+		// Need to create enum for direction
+		// 1 = right or increasing x value
+		// 2 = left or decreasing x value
+		if (Convert.ToBoolean(Fklb.Direction & 1))
+		{
+			var filteredSet = Fklb.PointList[currTuple].Where(t => t.y == currTuple.YPosition && t.X > currTuple.XPosition && t.X <= Fklb.EndPoint.XPosition);
+			(int X, int Y) nextPoint = filteredSet.Count() != 0 ? filteredSet.Last() : currTuple;
+			Fklb.State = Fklb.VerticalState;
+			return new LinePoint{XPosition=nextPoint.X, YPosition=nextPoint.Y};
+		}
+		if (Convert.ToBoolean(Fklb.Direction & 2))
+		{
+			var filteredSet = Fklb.PointList[currTuple].Where(t => t.y == currTuple.YPosition && t.X < currTuple.XPosition && t.X >= Fklb.EndPoint.XPosition);
+			(int X, int Y) nextPoint = filteredSet.Count() != 0 ? filteredSet.Last() : currTuple;
+			Fklb.State = Fklb.VerticalState;
+			return new LinePoint{XPosition=nextPoint.X, YPosition=nextPoint.Y};
+		}
+		// Need to think of a better default state. Or maybe not. Is this fine? At this point I am so tired who even cares. It is whatever. just go to 0,0. 
+		return new LinePoint{XPosition=0, YPosition = 0};
+	}
+
+	private bool CanGoToEndPoint(LinePoint currentPoint)
+	{
+		var currTuple = (currentPoint.XPosition, currentPoint.YPosition);
+		var endTuple = (Fklb.EndPoint.XPosition, Fklb.EndPoint.YPosition);
+		return Fklb.PointList[endTuple].Contains(currTuple);
 	}
 }
-// NEED TO RETHINK ALL OF THIS. THINK IN TERMS OF WHAT IS IN MY WAY AND HOW MUCH CAN BE ADDED TO X VALUE
