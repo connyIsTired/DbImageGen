@@ -11,9 +11,10 @@ public class ForeignKeyLineBuilder
 
 	public ILineBuilderState State {get; set;}
 	public LinePoint EndPoint {get; set;}
+	public TableDto EndTable {get; set;}
 	public LinePoint StartingPoint {get; set;}
 	public int Direction {get; set;}
-	public Dictionary<(int X, int Y), SortedSet<(int X, int y)>> PointList {get; set;}
+	public Dictionary<(int X, int Y, string PointType), SortedSet<(int X, int y, string PointType)>> PointList {get; set;}
 	private int Margin = 50;
 
 	public ForeignKeyLineBuilder(DbImageGenDto dto)
@@ -37,14 +38,15 @@ public class ForeignKeyLineBuilder
 		{
 			return linePointList;
 		}
-		linePointList.Add(State.MakePoint(point));
+		SetDirection(point);
+		var nextPoint = State.MakePoint(point);
+		linePointList.Add(nextPoint);
 
-		return BuildLine(point, linePointList);
+		return BuildLine(nextPoint, linePointList);
 	}
 
 	public List<ForeignKeyLine> BuildLines()
 	{
-		foreach(var thing in PointList){Console.WriteLine(thing);}
 		var Lines = new List<ForeignKeyLine>();
 		foreach (var table in Dto.Tables)
 		{
@@ -57,7 +59,6 @@ public class ForeignKeyLineBuilder
 				var linePointList = new List<LinePoint>();
 				StartingPoint = GetStartingPoint(table);
 				FindEndPoint(fk);
-				SetDirection();
 				var line = BuildLine(StartingPoint, linePointList);
 				var fkl = new ForeignKeyLine();
 				fkl.LinePoints = line;
@@ -80,22 +81,49 @@ public class ForeignKeyLineBuilder
 
 	private void FindEndPoint(int fk)
 	{
-		var endTable = Dto.Tables.Find(t => t.Id == fk);
+		EndTable = Dto.Tables.Find(t => t.Id == fk);
 
-		EndPoint.XPosition = endTable.TablePositions.TableStartX;
-		EndPoint.YPosition = endTable.TablePositions.TableStartY + (endTable.TableSize / 2);
+		EndPoint.XPosition = EndTable.TablePositions.TableStartX;
+		EndPoint.YPosition = EndTable.TablePositions.TableStartY + (EndTable.TableSize / 2);
 	}
 
-	private void SetDirection()
+	private void SetDirection(LinePoint currentPoint)
 	{
 		// move right = 1
 		// move left = 2
 		// move up = 4
 		// move down = 8
+		
+		if (State == HorizontalState || State == EndState)
+		{
+			return;
+		}
 
-		var horizontalValue = StartingPoint.XPosition < EndPoint.XPosition ? 1 : 2;
-		var verticalValue = StartingPoint.YPosition <= EndPoint.YPosition ? 8 : 4;
-		Direction = horizontalValue + verticalValue;
+		if (State == StartState)
+		{
+			var horizontalValue = currentPoint.XPosition < EndPoint.XPosition ? 1 : 2;
+			var verticalValue = currentPoint.YPosition <= EndPoint.YPosition ? 8 : 4;
+			Direction = horizontalValue + verticalValue;
+			return;
+		}
+
+		var endTableTop = EndTable.TablePositions.TableStartY;
+		var endTableBottom = EndTable.TablePositions.TableStartY + EndTable.TableSize;
+
+		if (currentPoint.YPosition < endTableTop || (currentPoint.YPosition < endTableBottom && currentPoint.YPosition > endTableTop))
+		{
+			var horizontalValue = currentPoint.XPosition < EndPoint.XPosition ? 1 : 2;
+			var verticalValue = 8;
+			Direction = horizontalValue + verticalValue;
+			return;
+		}
+		if (currentPoint.YPosition > endTableBottom)
+		{
+			var horizontalValue = currentPoint.XPosition < EndPoint.XPosition ? 1 : 2;
+			var verticalValue = 4;
+			Direction = horizontalValue + verticalValue;
+			return;
+		}
 	}
 }
 

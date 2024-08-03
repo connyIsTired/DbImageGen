@@ -16,8 +16,8 @@ public class LineHorizontalState : ILineBuilderState
 			Fklb.State = Fklb.EndState;
 			return Fklb.EndPoint;
 		}
-		var currTuple = (currentPoint.XPosition, currentPoint.YPosition);
-		if(currTuple == (Fklb.StartingPoint.XPosition, Fklb.StartingPoint.YPosition))
+		var currTuple = (currentPoint.XPosition, currentPoint.YPosition, "E");
+		if(currTuple == (Fklb.StartingPoint.XPosition, Fklb.StartingPoint.YPosition, "E"))
 		{
 			var point = Fklb.PointList[currTuple].First();
 			Fklb.State = Fklb.VerticalState;
@@ -29,14 +29,14 @@ public class LineHorizontalState : ILineBuilderState
 		if (Convert.ToBoolean(Fklb.Direction & 1))
 		{
 			var filteredSet = Fklb.PointList[currTuple].Where(t => t.y == currTuple.YPosition && t.X > currTuple.XPosition && t.X <= Fklb.EndPoint.XPosition);
-			(int X, int Y) nextPoint = filteredSet.Count() != 0 ? filteredSet.Last() : currTuple;
+			(int X, int Y, string PointType) nextPoint = filteredSet.Count() != 0 ? filteredSet.Last() : currTuple;
 			Fklb.State = Fklb.VerticalState;
 			return new LinePoint{XPosition=nextPoint.X, YPosition=nextPoint.Y};
 		}
 		if (Convert.ToBoolean(Fklb.Direction & 2))
 		{
-			var filteredSet = Fklb.PointList[currTuple].Where(t => t.y == currTuple.YPosition && t.X < currTuple.XPosition && t.X >= Fklb.EndPoint.XPosition);
-			(int X, int Y) nextPoint = filteredSet.Count() != 0 ? filteredSet.Last() : currTuple;
+			var filteredSet = Fklb.PointList[currTuple].Where(t => t.y == currTuple.YPosition && t.X < currTuple.XPosition && t.X >= Fklb.EndPoint.XPosition-25);
+			(int X, int Y, string PointType) nextPoint = filteredSet.Count() != 0 ? filteredSet.Last() : currTuple;
 			Fklb.State = Fklb.VerticalState;
 			return new LinePoint{XPosition=nextPoint.X, YPosition=nextPoint.Y};
 		}
@@ -46,8 +46,8 @@ public class LineHorizontalState : ILineBuilderState
 
 	private bool CanGoToEndPoint(LinePoint currentPoint)
 	{
-		var currTuple = (currentPoint.XPosition, currentPoint.YPosition);
-		var endTuple = (Fklb.EndPoint.XPosition, Fklb.EndPoint.YPosition);
+		var currTuple = (currentPoint.XPosition, currentPoint.YPosition, "T");
+		var endTuple = (Fklb.EndPoint.XPosition, Fklb.EndPoint.YPosition, "E");
 		return Fklb.PointList[endTuple].Contains(currTuple);
 	}
 }
