@@ -25,7 +25,6 @@ public class ForeignKeyLineBuilder
 		HorizontalState = new LineHorizontalState(this);
 		VerticalState = new LineVerticalState(this);
 		State = StartState;
-		EndPoint = new LinePoint();
 		StartingPoint = new LinePoint();
 		Direction = 0;
 		PointList = new ForeignKeyPointBuilder(Margin/2, Dto.Tables).BuildPointList();
@@ -63,6 +62,8 @@ public class ForeignKeyLineBuilder
 				var fkl = new ForeignKeyLine();
 				fkl.LinePoints = line;
 				Lines.Add(fkl);
+				// this state change needs to be handled in the state classes
+				State = StartState;
 			}
 		}
 		return Lines;
@@ -82,6 +83,8 @@ public class ForeignKeyLineBuilder
 	private void FindEndPoint(int fk)
 	{
 		EndTable = Dto.Tables.Find(t => t.Id == fk);
+
+		EndPoint = new LinePoint();
 
 		EndPoint.XPosition = EndTable.TablePositions.TableStartX;
 		EndPoint.YPosition = EndTable.TablePositions.TableStartY + (EndTable.TableSize / 2);

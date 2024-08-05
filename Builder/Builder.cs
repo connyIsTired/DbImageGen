@@ -73,19 +73,20 @@ public class Builder
 	public void BuildLines()
 	{
 		// <polyline points="0,100 50,25 50,75 100,0" />
-		var pline = "<polyline fill=\"none\" stroke=\"black\" points=\"";
 		foreach(var line in Incoming.ForeignKeys)
 		{
 			if (line.LinePoints.Count > 0)
 			{
+			var pline = "<polyline fill=\"none\" stroke=\"black\" points=\"";
 				foreach(var lp in line.LinePoints) {
 
 					pline += $"{lp.XPosition}, {lp.YPosition} ";
 				}
+		pline += "\"/>";
+
+		ReturnObj += pline;
 			}
 		}
-		pline += "\"/>";
-		ReturnObj += pline;
 	}
 	
 	public string Build()
